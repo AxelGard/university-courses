@@ -14,3 +14,6 @@ plz give it a start so to easy keep up with new courses
 | [TDDD86](https://github.com/AxelGard/university-courses/tree/master/tddd86-algorithms) | data structure and algorithm, C++ |
 | [TDDB68](https://github.com/AxelGard/pintos) | PintOS, linux, C |
 | [TDDE35](https://github.com/AxelGard/university-courses/tree/master/tdde35-network) | networking proxy |
+| [TDDD92]() | SCII AI | 
+| [TDDC17]() | AI | 
+| [TDAB01]() | stats, R |
