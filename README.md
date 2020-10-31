@@ -6,7 +6,7 @@ plz give it a start so to easy keep up with new courses
 
 | course  | about |
 |---|---|
-| [TDAB01]() | stats, R |
+| [TDAB01](https://github.com/AxelGard/university-courses/tree/master/tdab01-stat) | stats, R |
 | [TDDC17]() | AI |
 | [TDDD92]() | SCII AI |
 | [TDDE35](https://github.com/AxelGard/university-courses/tree/master/tdde35-network) | networking proxy |
