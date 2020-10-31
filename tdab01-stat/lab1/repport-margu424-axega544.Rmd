@@ -1,0 +1,426 @@
+---
+title: "Lab 1"
+author: "Martin Gustafsson (margu424) and Axel Gard (axega544)"
+date: '2020-09-29'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Uppgift 1 Simulering av normalfördelning
+
+### a) Visualisera fördelningarna i två histogram. Visualisera fördelningens pdf i samma graf.
+
+Nedan simuleras normalfördelningen med olika antalet dragningar.
+
+```{r }
+x1 <- rnorm(100, mean = 10, sd = 4)
+x2 <- rnorm(10000, mean = 10, sd = 4)
+```
+
+I figurerna nedan visas resultatet av dragningarna som ett histogram tillsammans med täthetsfunktionen.
+
+```{r, echo=FALSE}
+hist(x1, probability = TRUE)
+xfit <- seq(0, 20, 0.1)   
+yfit <- dnorm(xfit, mean = 10, sd = 4)
+lines(xfit, yfit, col="blue", lwd=2)
+```
+
+```{r, echo=FALSE}
+hist(x2, probability = TRUE)
+xfit <- seq(-5, 25, 0.1)   
+yfit <- dnorm(xfit, mean = 10, sd = 4)
+lines(xfit, yfit, col="blue", lwd=2)
+```
+
+### b) Beskriv skillnaden mellan de olika graferna.
+
+Vi kan tydligare se normalfördelningsformen om vi gör fler dragningar/simuleringar.
+
+### 3.1.2
+
+```{r }
+n <- 10000
+x1 <- rbinom(n, 1, 0.2)
+x2 <- rbinom(n, 20, 0.1)
+x3 <- rbinom(n, 20, 0.5)
+x4 <- rgeom(n, 0.1)
+x5 <- rpois(n, 10)
+
+y1 <- runif(n, min = 0, max = 1)
+y2 <- rexp(n, 3)
+y3 <- rgamma(n, 2, 1)
+y4 <- rt(n, 3)
+y5 <- rbeta(n, 0.1, 0.1)
+y6 <- rbeta(n, 1, 1)
+y7 <- rbeta(n, 10, 5)
+```
+
+```{r, echo=FALSE}
+hist(x1, probability = TRUE)
+xfit <- seq(0, 1, 1)   
+yfit <- dbinom(xfit, 1, 0.2)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(x2, probability = TRUE)
+xfit <- seq(0, 8, 1)   
+yfit <- dbinom(xfit, 20, 0.1)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(x3, probability = TRUE)
+xfit <- seq(0, 20, 1)   
+yfit <- dbinom(xfit, 20, 0.5)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(x4, probability = TRUE)
+xfit <- seq(0, 80, 1)   
+yfit <- dgeom(xfit, 0.1)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(x5, probability = TRUE)
+xfit <- seq(0, 20, 1)   
+yfit <- dpois(xfit, 10)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y1, probability = TRUE)
+xfit <- seq(0, 1, 0.1)   
+yfit <- dunif(xfit, min = 0, max = 1)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y2, probability = TRUE)
+xfit <- seq(0, 4, 0.1)   
+yfit <- dexp(xfit, 3)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y3, probability = TRUE)
+xfit <- seq(0, 12, 0.1)   
+yfit <- dgamma(xfit, 2, 1)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y4, probability = TRUE)
+xfit <- seq(-20, 30, 1)   
+yfit <- dt(xfit, 3)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y5, probability = TRUE)
+xfit <- seq(0, 1, 0.01)   
+yfit <- dbeta(xfit, 0.1, 0.1)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y6, probability = TRUE)
+xfit <- seq(0, 1, 0.01)
+yfit <- dbeta(xfit, 1, 1)
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(y7, probability = TRUE)
+xfit <- seq(0, 1, 0.01)   
+yfit <- dbeta(xfit, 10, 5)
+lines(xfit, yfit, col="blue", lwd=2)
+```
+
+### 3.1.3
+#### (1)
+
+Simulera 1000 dragningar från varje fördelning.
+
+```{r }
+n <- 1000
+x6 <- rbinom(n, 10000, 0.001)
+y8 <- rt(n, 10000)
+x7 <- rpois(n, 10000*0.001)
+y9 <- rnorm(n, 10000, 1)
+```
+
+```{r, echo=FALSE}
+    hist(x6, probability = TRUE)
+    xfit <- seq(0, 20, 1)   
+    yfit <- dbinom(xfit, 10000, 0.001)
+    lines(xfit, yfit, col="blue", lwd=2)
+
+    hist(x7, probability = TRUE)
+    xfit <- seq(0, 20, 1)   
+    yfit <- dpois(xfit, 10000*0.001)
+    lines(xfit, yfit, col="blue", lwd=2)
+
+    hist(y8, probability = TRUE)
+    xfit <- seq(-5, 5, 0.1)   
+    yfit <- dt(xfit, 10000)
+    lines(xfit, yfit, col="blue", lwd=2)
+
+    hist(y9, probability = TRUE)
+    xfit <- seq(10000 - 5, 10000 + 5, 0.1)   
+    yfit <- dnorm(xfit, 10000, 1)
+    lines(xfit, yfit, col="blue", lwd=2)
+```
+
+### 3.1.4
+#### (1)
+
+simulera 10000 dragningar från varje fördelning och
+skriv ut sannolikheten att en dragning är lika med 0
+
+```{r }
+  y10 <- rbinom(10000, 10, 0.1)
+  x8 <- rnorm(10000, 0, 1)
+
+  p <- dbinom(0, 10, 0.1)
+  print(p)
+```
+
+```{r, echo=FALSE}
+    hist(y10, probability = TRUE)
+    xfit <- seq(0, 20, 1)   
+    yfit <- dbinom(xfit, 10, 0.1)
+    lines(xfit, yfit, col="blue", lwd=2)
+
+    hist(x8, probability = TRUE)
+    xfit <- seq(-5, 5, 0.1)   
+    yfit <- dnorm(xfit, 0, 1)
+    lines(xfit, yfit, col="blue", lwd=2)
+```
+
+#### (2)
+
+Använd den kumulativa fördelningsfunktionen för att beräkna sannolikheterna
+
+```{r }
+    p1 <- pnorm(0, 0, 1)
+    print(p1)
+    p2 <- pnorm(1, 0, 1) - pnorm(-1, 0, 1)
+    print(p2)
+    p3 <- 1 - pnorm(1.96, 0, 1)
+    print(p3)
+    p4 <- pbinom(10, 10, 0.1) - pbinom(0, 10, 0.1)
+    print(p4)
+    eps <- 0.0001
+    p5 <- pbinom(0 + eps, 10, 0.1) - pbinom(0 - eps, 10, 0.1)
+    print(p5)
+    p6 <- p4 + p5
+    print(p6)
+```
+
+#### (3)
+
+Simuleringar för att beräkna samma sannolikheten som i (2)
+
+```{r }
+    p1s <- sum(x8 < 0) / 10000
+    print(p1s)
+    p2s <- (sum(x8 < 1) - sum(x8 <= -1)) / 10000
+    print(p2s)
+    p3s <- sum(x8 > 1.96) / 10000
+    print(p3s)
+    p4s <- (sum(y10 < 10) - sum(y10 <= 0)) / 10000
+    print(p4s)
+    p5s <- sum(y10 == 0) / 10000
+    print(p5s)
+    p6s <- (sum(y10 <= 10) - sum(y10 < 0)) / 10000
+    print(p6s)
+```
+
+### 3.1.5
+#### (1)
+
+Beräkna antalet förväntade fel.
+
+```{r }
+    old <- rbinom(n = 10000, size = 337, p = 0.1)
+    print(sum(old)/10000)
+
+    prob <- sum(runif(n = 10000, min = 0.02, max = 0.16))/10000
+    new <- rbinom(n = 10000, size = 337, p = prob)
+    print(sum(new)/10000)
+```
+
+#### (2)
+
+Beräkna sannolikheten att vi får mindre fel i den nya jämfört med den gamla.
+
+```{r }
+    print(sum(new < old)/10000)
+```
+
+#### (3)
+
+Beräkna sannolikheten att vi får mer än 50 fel.
+
+```{r }
+    sum(old > 50)/10000
+    sum(new > 50)/10000
+```
+
+### 3.2.1
+#### (1)
+
+E(X) = 10 * 0.2 = 2
+
+E(Y) = 2 / 2 = 1
+
+#### (2)
+```{r }
+    draws <- c(seq(10, 100, 10), seq(100, 1000, 100), seq(1000, 10000, 1000))
+    binomMeans <- numeric(length(draws))
+    gammaMeans <- numeric(length(draws))
+    for (i in 1:length(draws)) {
+        n <- draws[i]
+        binomMeans[i] <- mean(rbinom(n, 10, 0.2))
+        gammaMeans[i] <- mean(rgamma(n, 2, 2))
+    }
+```
+
+```{r, echo=FALSE}
+    plot(draws, binomMeans, xlab="draws", ylab="means", main="binom means as a function of draws", ylim=c(1.5,2.5), xlim=c(0, 10000), col="blue", type="l")
+    plot(draws, gammaMeans, xlab="draws", ylab="means", main="gamma means as a function of draws", ylim=c(0.5,1.5), xlim=c(0, 10000), col="blue", type="l")
+```
+
+### 3.3.1
+#### (1)
+E(X) = 1 / 10 = 0.1
+
+Var(X) = 1 / (10^2) = 0.01
+
+E(Y) = 3
+
+Var(Y) = 3
+
+#### (2)
+
+Använd simuleringarna för att beräkna medelvärdet och variansen.
+
+```{r }
+    x <- rexp(10000, 10)
+    print(mean(x))
+    print(var(x))
+    y <- rpois(10000, 3)
+    print(mean(y))
+    print(var(y))
+```
+
+#### (3)
+E(3) = 3
+
+E(3X + 2) = E(3X) + E(2) = 3 * E(X) + 2 = 0.3 + 2 = 2.3
+
+E(X + Y) = E(X) + E(Y) = 0.1 + 3 = 3.1
+
+E(X * Y) = E(X) * E(Y) = 0.1 * 3 = 0.3
+
+E(3X + 2Y - 3) = 3E(X) + 2E(Y) - 3 = 0.3 + 6 - 3 = 3.3
+
+Var(2X - 5) = 2^2 * Var(X) = 4 * 0.01 = 0.04
+
+Var(X + Y) = Var(X) + Var(Y) = 0.01 + 3 = 3.01
+
+#### (4)
+
+Använd simulering för att beräkna värdena i 3.
+
+```{r }
+    print(mean(3))
+    print(mean(3*x + 2))
+    print(mean(x + y))
+    print(mean(x * y))
+    print(mean(3*x + 2*y - 3))
+    print(var(2*x - 5))
+    print(var(x + y))
+```
+
+### 3.4.1
+#### (1)
+
+Kör 1000 dragningar och visualisera med histogram.
+
+```{r }
+    x <- rpois(1000, 5)
+    y <- rexp(1000, 1)
+    z <- rbinom(1000, 10, 0.01)
+
+    hist(x, probability = TRUE)
+    hist(y, probability = TRUE)
+    hist(z, probability = TRUE)
+```
+
+#### (2)
+kör 10 dragningar 1000 gånger och beräkna medelvärdet för varje 10 dragningar.
+
+Sen visas medelvärdena som histogram.
+```{r }
+    meanX <- numeric(0)
+    meanY <- numeric(0)
+    for (i in 1:1000) {
+        meanX <- c(meanX, mean(rpois(10, 5)))
+        meanY <- c(meanY, mean(rexp(10, 1)))
+    }
+```    
+```{r, echo=FALSE}
+    hist(meanX, probability = TRUE)
+    hist(meanY, probability = TRUE)
+```
+
+#### (3)
+
+kör 30, 100 och 1000 dragningar 1000 gånger och beräkna medelvärdet för varje 30, 100, 1000 dragningar.
+
+Sen visas medelvärdena som histogram.
+
+```{r }
+    meanX30 <- numeric(0)
+    meanY30 <- numeric(0)
+    meanZ30 <- numeric(0)
+    for (i in 1:1000) {
+        meanX30 <- c(meanX30, mean(rpois(30, 5)))
+        meanY30 <- c(meanY30, mean(rexp(30, 1)))
+        meanZ30 <- c(meanZ30, mean(rbinom(30, 10, 0.01)))
+    }
+```
+```{r, echo=FALSE}
+    hist(meanX30)
+    hist(meanY30)
+    hist(meanZ30)
+```
+```{r }
+    meanX100 <- numeric(0)
+    meanY100 <- numeric(0)
+    meanZ100 <- numeric(0)
+    for (i in 1:1000) {
+        meanX100 <- c(meanX100, mean(rpois(100, 5)))
+        meanY100 <- c(meanY100, mean(rexp(100, 1)))
+        meanZ100 <- c(meanZ100, mean(rbinom(100, 10, 0.01)))
+    }
+```
+```{r, echo=FALSE}
+    hist(meanX100)
+    hist(meanY100)
+    hist(meanZ100)
+```
+```{r }
+    meanX1000 <- numeric(0)
+    meanY1000 <- numeric(0)
+    meanZ1000 <- numeric(0)
+    for (i in 1:1000) {
+        meanX1000 <- c(meanX1000, mean(rpois(1000, 5)))
+        meanY1000 <- c(meanY1000, mean(rexp(1000, 1)))
+        meanZ1000 <- c(meanZ1000, mean(rbinom(1000, 10, 0.01)))
+    }
+```
+```{r, echo=FALSE}
+    hist(meanX1000)
+    hist(meanY1000)
+    hist(meanZ1000)
+```
+
+Centrala gränsvärdessatsen säger att medelvärdena konvergerar till en normalfördelning vilket de verkar göra.
+
+Vid låg varians så minskar spridningen på medelvärdena vilket borde leda till att den konvergerar
+snabbare till en normalfördelning.
+
+Var(X) = 5
+
+Var(Y) = 1/(1^2) = 1
+
+Var(Z) = 10 * 0.01 * 0.99 = 0.099
+
+Detta borde då leda till att Z konvergerar snabbast mot en normalfördelning.
