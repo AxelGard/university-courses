@@ -1,5 +1,5 @@
 # university-courses
-All of my projects and code from university, studing MSc Software Engineering @ Linköping University
+Here are some of my projects and code from university, studing MSc Software Engineering @ Linköping University
 
 plz give it a start so to easy keep up with new courses
 
