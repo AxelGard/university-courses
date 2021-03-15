@@ -6,6 +6,8 @@ plz give it a start so to easy keep up with new courses
 
 | course  | about |
 |---|---|
+| [TDDD96](https://github.com/Clear-Sight) | Bachelor's project | 
+| [TSKS24](https://github.com/AxelGard/university-courses/tree/master/tsks24-sig) | signal |
 | [TDDD37](https://github.com/AxelGard/university-courses/tree/master/tddd37-db-sql) | SQL | 
 | [TFYA87](https://github.com/AxelGard/university-courses/tree/master/tfya87-physics) | Physics simulation | 
 | [TDDD92](https://github.com/AxelGard/university-courses/tree/master/tddd92-AiSCII) | SCII AI projcet | 
