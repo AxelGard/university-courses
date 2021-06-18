@@ -10,7 +10,7 @@ plz give it a start so to easy keep up with new courses
 | [TSKS24](https://github.com/AxelGard/university-courses/tree/master/tsks24-sig) | signal |
 | [TDDD37](https://github.com/AxelGard/university-courses/tree/master/tddd37-db-sql) | SQL | 
 | [TFYA87](https://github.com/AxelGard/university-courses/tree/master/tfya87-physics) | Physics simulation | 
-| [TDDD92](https://github.com/AxelGard/university-courses/tree/master/tddd92-AiSCII) | SCII AI projcet | 
+| [TDDD92](https://github.com/AxelGard/university-courses/tree/master/tddd92-SC2-AI) | SCII AI projcet | 
 | [TDAB01](https://github.com/AxelGard/university-courses/tree/master/tdab01-stat) | stats, R |
 | [TDDC17](https://github.com/AxelGard/university-courses/tree/master/tddc17-aiTheory) | AI |
 | [TDDE35](https://github.com/AxelGard/university-courses/tree/master/tdde35-network) | networking proxy |
