@@ -1,10 +1,12 @@
 # university-courses
-Here are **some** of my projects and code from university, studing MSc Software Engineering @ Linköping University
+Here are **some** of my projects and code from university, [studing MSc Software Engineering @ Linköping University](https://liu.se/en/education/program/6cmju)
 
-plz give it a start so to easy keep up with new courses
-I am not sure how much of my master level courses I will be able to upload. 
+plz give it a start so to easy keep up with new courses.
+
+I am not sure how much of my master level courses I will be able to upload.
 
 courses from year 1 - 3 (Bachelors)
+
 | course  | about |
 |---|---|
 | [TDDD96](https://github.com/Clear-Sight) | Bachelor's project |
