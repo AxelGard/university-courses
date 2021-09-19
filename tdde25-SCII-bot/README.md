@@ -2,9 +2,9 @@
 
 A bot that plays starcraft 2.
 
-This was part of a computer science course at LiU.
+This was part of a computer science course at LiU. 
 
-Be aware that this was my first project at university.
+Be aware that this was my first project at university. **For a better implementation check out the [tddd92-SC2-AI](https://github.com/AxelGard/university-courses/tree/master/tddd92-SC2-AI) course instead.**
 
 Course TDDE25, https://www.ida.liu.se/~TDDE25/index.en.shtml
 
