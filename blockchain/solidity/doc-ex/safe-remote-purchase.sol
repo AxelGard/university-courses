@@ -6,7 +6,6 @@ contract Purchase {
     address payable public buyer;
 
     enum State { Created, Locked, Release, Inactive }
-    // The state variable has a default value of the first member, `State.created`
     State public state;
 
     modifier condition(bool _condition) {
@@ -46,9 +45,6 @@ contract Purchase {
     event ItemReceived();
     event SellerRefunded();
 
-    // Ensure that `msg.value` is an even number.
-    // Division will truncate if it is an odd number.
-    // Check via multiplication that it wasn't an odd number.
     constructor() payable {
         seller = payable(msg.sender);
         value = msg.value / 2;
@@ -56,9 +52,6 @@ contract Purchase {
             revert ValueNotEven();
     }
 
-    /// Abort the purchase and reclaim the ether.
-    /// Can only be called by the seller before
-    /// the contract is locked.
     function abort()
         public
         onlySeller
@@ -66,17 +59,10 @@ contract Purchase {
     {
         emit Aborted();
         state = State.Inactive;
-        // We use transfer here directly. It is
-        // reentrancy-safe, because it is the
-        // last call in this function and we
-        // already changed the state.
+
         seller.transfer(address(this).balance);
     }
 
-    /// Confirm the purchase as buyer.
-    /// Transaction has to include `2 * value` ether.
-    /// The ether will be locked until confirmReceived
-    /// is called.
     function confirmPurchase()
         public
         inState(State.Created)
@@ -88,17 +74,13 @@ contract Purchase {
         state = State.Locked;
     }
 
-    /// Confirm that you (the buyer) received the item.
-    /// This will release the locked ether.
     function confirmReceived()
         public
         onlyBuyer
         inState(State.Locked)
     {
         emit ItemReceived();
-        // It is important to change the state first because
-        // otherwise, the contracts called using `send` below
-        // can call in again here.
+
         state = State.Release;
 
         buyer.transfer(value);
@@ -112,9 +94,6 @@ contract Purchase {
         inState(State.Release)
     {
         emit SellerRefunded();
-        // It is important to change the state first because
-        // otherwise, the contracts called using `send` below
-        // can call in again here.
         state = State.Inactive;
 
         seller.transfer(3 * value);
