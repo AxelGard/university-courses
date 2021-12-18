@@ -74,7 +74,7 @@ error.test <- misclass(test$y, fit)
 error.valid <- misclass.valid[which.min(misclass.valid)]
 printf("test error for optimal k, error:{error.test}")
 printf(" differences from validation and test, error delta:{error.test - error.valid}")
-
+´
 kknn = kknn::kknn(as.factor(y)~., train, train, k=which.min(misclass.valid), kernel="rectangular")
 
 # Grab all cases where the model thinks there is a 8.
