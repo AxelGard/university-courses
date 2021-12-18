@@ -9,6 +9,7 @@ courses from master
 
 | course  | about |
 |---|---|
+| [TDDE01](https://github.com/AxelGard/university-courses/tree/master/tdde01-machine-learning) | Machine Learning | 
 | [TSRT04](https://github.com/AxelGard/university-courses/tree/master/tsrt04-matlab) | MATLAB |
 
 courses from year 1 - 3 (Bachelors)
