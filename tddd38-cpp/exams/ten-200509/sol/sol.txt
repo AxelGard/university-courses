@@ -1,0 +1,232 @@
+==== Question #1 ====
+
+There are 5 classes in my solution.
+
+Element : Is the base class of the class hierarchy representing HTML
+          elements.  It has one virtual function called 'print'. This
+          virtual function will print the element to 'std::cout'.  It
+          has a normal member function called 'query_tag' which
+          returns a 'std::vector' of elements. The returned vector
+          contains all elements with the specified tag in the
+          HTML hierarchy which has this element as its root.
+
+          It also contains two helper functions:
+
+          - 'print_tag' which is a member function that prints the
+            HTML tag for this elements.
+
+          - 'print_indent' which is a static function that prints the
+            specified amount of spaces to 'std::cout'.
+
+          It has two data members, both of which are strings:
+
+          - 'tag' which represents what type of HTML element this is.
+
+          - 'id' which represents which unique ID this element has. If
+            it is the empty string then it doesn't have an ID.
+
+Content : A subclass of Element which represents those HTML elements
+          that only contains text. It overrides 'print' in the
+          following way: it will print the HTML element and its
+          content on one line.
+
+          It has one data member 'content' which represents the
+          textual content of the HTML element.
+
+Container : A subclass of Element which represent those HTML elements
+            that themselves contain HTML elements. It overrides
+            'print' in the following way: it will print the tag of the
+            HTML element and then it will print each of its children
+            indented 4 spaces and then ending by printing the end tag
+            of the element.
+
+            It has one member function called add_child which adds a
+            child to the vector 'children'. It then returns the
+            address of the added element.
+
+            It has one data member 'children' which is a vector
+            containing all the HTML elements that this HTML element
+            contains.
+
+Standalone : A subclass of Element which represent those HTML elements
+             that doesn't have an end tag. It overrides 'print' in
+             such a way that it only prints the tag of the HTML
+             element, nothing else.
+
+             No extra data members nor any extra member functions.
+
+Hierarchy : Represents a HTML document hierarchy. It contains a lookup
+            table for all Element objects that exists inside this HTML
+            document. These elements are looked up with their IDs as
+            keys.
+
+            It has two member functions:
+
+            - 'insert' which takes an Element and inserts it into the
+              lookup table if it has an id. If the passed in Element
+              is a Container, then it will also insert each of its
+              children.
+
+            - 'query_id' returns the element with the specified ID.
+              If no such element exists, returns nullptr.
+
+            It has one data member 'lookup' which is an 'std::map'
+            that has ID ('std::string') as key, and an Element has its
+            value. This table is used to lookup elements based on
+            their ID.
+
+
+==== Question #2 ====
+
+The given code uses complete enumeration for each of the different
+types of HTML elements, which means that if a new type of element
+where to be introduced to the code we would have to modify each
+function to add a new case for that type.
+
+If we implement these functions that has complete enumeration with
+virtual functions, the virtual dispatching allows us to customize the
+behaviour of the virtual function rather than having to modify
+everything. Making these classes a part of inheritance hierarchy also
+allows us to use dynamic_cast and typeid for checking which type it is
+rather than using an integer. This has the additional advantage that
+dynamic_cast can be used to check if it is a part of the hierarchy. So
+for example, if we where to add a new type of Container element, we
+can just inherit from Container and that would mean that the rest of
+the code would still treat it as a Container.
+
+There is only one virtual function in my hierarchy and that is the
+'print' function. This was made virtual since each class has its own
+behaviour when printing it. Every other option where virtual functions
+could be used only involved the Container class. So it would be
+uneccessary to clutter the hierarchy with more virtual functions that
+are only overloaded in 'Container', since each virtual function
+introduces overhead, making the code less efficient.
+
+Making the 'print' function virtual also increases the maintainability
+of the code since now we can add a new class and customize its
+printing behaviour without any issues.
+
+Each class hides away its data so that it is inaccessible from outside
+the class. However, the Hierarchy class needs access to these data
+members, and there are two ways to solve that. Either we make
+getters/setters or we make Hierarchy a friend of Element. I choose the
+second alternative since I see no reason for the outside user to
+retrieve and modify the data inside the classes (so getters/setters
+are unecessary).
+
+==== Question #3 ====
+
+I used templates in one place, when implementing the ordinary function
+'query_if'. The function looks like this:
+
+template <typename Predicate>
+std::vector<Element*> query_if(Element& e, Predicate p)
+{
+    std::vector<Element*> result {};
+    if (p(e))
+    {
+        result.push_back(&e);
+    }
+
+    if (Container* container = dynamic_cast<Container*>(&e); container != nullptr)
+    {
+        for (Element* child : container->children)
+        {
+            std::vector<Element*> part { query_if(*child, p) };
+            std::copy(std::begin(part), std::end(part), std::back_inserter(result));
+        }
+    }
+
+    return result;
+}
+
+This function needs to be a template because the second parameter
+should be a callable object (a function, a lambda or a function
+object), and the best way to do that is by making it a template. That
+way we can bind anything to the second parameter, which allows us to
+pass in any type of callable object. This is better than the
+alternative, std::function which is a lot more inefficient. However
+std::function would have the advantage that the error messages are
+better, and it would only generate one version of the 'query_if'
+function. It is also better than what the given code does, because the
+given code only takes a function pointer, which can only point to
+functions.
+
+==== Question #4 ====
+
+I used std::copy inside the 'query_if' function. I replaced the following:
+
+std::vector<Element*> result {};
+
+// ...
+
+for (unsigned i{0}; i < e.children.size(); ++i)
+{
+    std::vector<Element*> part { query_if(*e.children[i], predicate) };
+    for (unsigned j{0}; j < part.size(); ++j)
+    {
+        result.push_back(part[j]);
+    }
+}
+
+Where 'e' is the current Element that we are querying from.
+
+With:
+
+std::vector<Element*> result {};
+
+// ...
+
+for (Element* child : container->children)
+{
+    std::vector<Element*> part { query_if(*child, p) };
+    std::copy(std::begin(part), std::end(part), std::back_inserter(result));
+}
+
+Where 'container' is the current Container (Element) that we are
+querying from.
+
+The reason why I made this change is that std::copy more clearly
+communicates the intention of the code. Here we are querying things
+from an element and store them in the 'part' vector. However all the
+elements inside the 'part' vector should be appended to the 'result'
+vector so that we can return them all at once.
+
+So what I do is I communicate through the usage of 'std::copy' that we
+are going to copy the elements from 'part' into the end of
+'result', which is not as clearly communicated with a hand-written loop.
+
+It might also be an improvement in efficiency since 'std::copy' could
+be better implemented than my hand-written alternatives.
+
+==== Question #5 ====
+
+I used 'std::map' to implement the core functionality of the Hierarchy
+class.  The reason I made this change is that the Hierarchy class is
+based around being able to search for an element by its ID, and each
+ID corresponds uniquely to one element. Since std::map fulfill these
+requirements and provides ways to look things up based on keys, I
+thought it was a perfect match. By using std::map rather than what the
+given code did, I could severely simplify the code which made it
+easier to read and understand. It also made the code more efficient,
+since lookup in std::map is O(log n) while lookup in the given code
+was O(n).
+
+I could have picked std::unordered_map as well, since the sorted
+nature of std::map does not matter. This would not change the code
+itself, it would still be as readable as the std::map version, but it
+would improve the efficiency to amortized constant time.
+
+==== Question #6 ====
+
+My solution does not follow the rule of 5. I do follow the rule of 0
+though.
+
+The reason for me not following rule of 5 is that my code does not
+have any resources to manage. All objects are stored on the stack,
+meaning they have automatic lifetime. That means I don't have to
+implement the destructor for my classes since they does not have
+ownership of any pointers/resources. Sure, they contain pointers, but
+these are resources automatically managed in 'main', not in the
+classes themselves. This means I don't have any special conditions
+when doing move or copy operations as well.

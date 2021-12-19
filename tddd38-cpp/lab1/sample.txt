@@ -1,0 +1,4 @@
+There are 4711 words in the file.
+The shortest word was "I" with 1 character(s).
+The longest word was "halfpennyworths" with 15 character(s).
+The average length was 5.50 character(s)
