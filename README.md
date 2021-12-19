@@ -9,7 +9,7 @@ courses from master
 
 | course  | about |
 |---|---|
-| [TDDD38](https://github.com/AxelGard/university-courses/tree/master/tddd38-cpp) | advance C++ |
+| [TDDD38](https://github.com/AxelGard/university-courses/tree/master/tddd38-cpp) | Advanced Programming in C++ |
 | [TDDE01](https://github.com/AxelGard/university-courses/tree/master/tdde01-machine-learning) | Machine Learning | 
 | [TSRT04](https://github.com/AxelGard/university-courses/tree/master/tsrt04-matlab) | MATLAB |
 
