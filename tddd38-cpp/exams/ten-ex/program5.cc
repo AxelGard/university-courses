@@ -71,6 +71,13 @@ int main()
 
     iota(begin(denominators), end(denominators), 1);
     
+    if (denominators.size() >= k){
+        auto dist{rotate(denominators, k)};
+        factors.erase(begin(factors), next(begin(factors), dist));
+        denominators.erase(begin(denominators), next(begin(denominators), dist));
+    }
+
+
     // fill factors with k+1, k+2, ..., n-1, n
     int counter{k + 1};
     for (int i{0}; i < factors.size(); ++i)
