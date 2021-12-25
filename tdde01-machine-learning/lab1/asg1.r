@@ -1,4 +1,3 @@
-
 library(glue)
 library(gtools)
 printf <- defmacro(str, expr = {print(glue(str))})
@@ -12,6 +11,7 @@ cross_entropy_loss <- function(y,y_hat){
   return((-1/length(y))*sum(y*log(y_hat)))
 }
 
+# import data and split 
 data = read.csv("optdigits.csv")
 colnames(data) <- c(1:64, "y")
 
@@ -27,8 +27,6 @@ valid = data[id2,]
 
 id3 = setdiff(id1,id2)
 test = data[id3,]
-
-
 
 # Finding the optimal K for the KKNN model over K=1:30
 misclass.train = c()
@@ -59,11 +57,9 @@ printf("best min classifecation of validation set is K={which.min(misclass.valid
 plot(1:length(cross_entropy), cross_entropy, type = "b")
 printf("Cross entropy: K={which.min(cross_entropy)}")
 
-
 kknn = kknn::kknn(as.factor(y)~., train, test, k=which.min(cross_entropy), kernel="rectangular")
 fit.cross = kknn$fitted.values
 misclass.cross = misclass(test$y, fit.cross)
-
 
 # Using optimal K for KKNN
 kknn = kknn::kknn(as.factor(y)~., train, test, k=which.min(misclass.valid), kernel="rectangular")
@@ -87,7 +83,6 @@ hardest_train_cases <- order(our_guesses, decreasing = FALSE)[1:3]
 easiest_train_cases <- order(our_guesses , decreasing = TRUE)[1:2]
 all_eights[hardest_train_cases]
 all_eights[easiest_train_cases]
-
 
 # create a heatmap for the hardest and easiest case.
 for (i in 1:3){

@@ -1,0 +1,19 @@
+---
+title: "TDDE01 Exam doc"
+author: "Axel Gard"
+output: pdf_document
+---
+\newpage 
+
+## Lab 1 
+### K-means
+```{r code=readLines("lab1/asg1.r"), echo=TRUE, eval=FALSE}
+```
+
+### Linear regression and ridge regression
+```{r code=readLines("lab1/asg2.r"), echo=TRUE, eval=FALSE}
+```
+
+### Logistic regression and basis function expansion
+```{r code=readLines("lab1/asg3.r"), echo=TRUE, eval=FALSE}
+```
