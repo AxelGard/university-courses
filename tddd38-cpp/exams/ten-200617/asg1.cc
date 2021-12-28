@@ -1,5 +1,28 @@
 
+template<typename T, int N>
+struct Pair
+{
 
+};
+
+
+template<typename ... T>
+struct List {
+
+};
+
+template<typename, typename>
+struct Lookup;
+
+template<typename T, typename U, int N, typename... Ts>
+struct Lookup<T, List<Pair<U, N>, Ts...>>{
+    static int const value = Lookup<T, List<Ts...>>::value;
+};
+
+template<typename T, int N, typename... Ts>
+struct Lookup<T, List<Pair<T, N>, Ts...>>{
+    static int const value = N;
+};
 
 int main()
 {
