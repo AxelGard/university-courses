@@ -211,7 +211,7 @@ std::vector<Element*> query_if(Element& e, bool(*predicate)(Element& e))
             }
         }
     }
-    return result;
+    return result;    
 }
 
 // This is a struct that keep track of every element in the document hierarchy.
@@ -289,7 +289,7 @@ bool only_content(Element& e)
 /*
   Expected output:
 
-== body ==
+== body == 
 
 <body>
     <h3>Title</h3>
@@ -305,7 +305,7 @@ bool only_content(Element& e)
     <button id='submit-button'>
 </body>
 
-== divs ==
+== divs == 
 
 <div id='div-1'>
     <ul>
@@ -318,11 +318,11 @@ bool only_content(Element& e)
     <p>This is a paragraph</p>
 </div>
 
-== submit-button ==
+== submit-button == 
 
 <button id='submit-button'>
 
-== content ==
+== content == 
 
 <h3>Title</h3>
 
@@ -330,40 +330,40 @@ bool only_content(Element& e)
 
 <li>Element #2</li>
 
-<p>This is a paragraph</p>
-
+<p>This is a paragraph</p>  
+  
  */
 int main()
 {
 
     // Create a HTML document
-
+    
     Element body { 1, "body" };
     Element header { 0, "h3", "", "Title" };
 
     add_child(body, header);
-
+    
     Element div1 { 1, "div", "div-1" };
 
     add_child(body, div1);
-
+    
     Element ul { 1, "ul" };
     Element li1 { 0, "li", "", "Element #1" };
     Element li2 { 0, "li", "", "Element #2" };
 
     add_child(ul, li1);
     add_child(ul, li2);
-
+    
     add_child(div1, ul);
-
+    
     Element div2 { 1, "div", "div-2" };
 
     add_child(body, div2);
-
+    
     Element p { 0, "p", "", "This is a paragraph" };
 
     add_child(div2, p);
-
+    
     Element submit { 2, "button", "submit-button" };
 
     add_child(body, submit);
@@ -375,15 +375,15 @@ int main()
     insert(hierarchy, body);
 
     // Print the HTML document
-
+    
     std::cout << "== body == \n" << std::endl;
-
+    
     print(body);
 
-    // Print all the divs
-
+    // Print all the divs 
+    
     std::cout << "\n== divs == \n" << std::endl;
-
+    
     std::vector<Element*> divs { query_tag(body, "div") };
     for (Element* div : divs)
     {
@@ -392,19 +392,19 @@ int main()
     }
 
     // Print the submit-button
-
+    
     std::cout << "== submit-button == \n" << std::endl;
-
+    
     print(*query_id(hierarchy, "submit-button"));
 
     // Print all the elements that only contain content.
-
+    
     std::cout << "\n== content == \n" << std::endl;
-
+    
     std::vector<Element*> contents { query_if(body, only_content) };
     for (Element* e : contents)
     {
         print(*e);
         std::cout << std::endl;
-    }
+    }    
 }
