@@ -36,6 +36,15 @@ T sum(T* b, T* e, T acc){
     return acc;
 }
 
+int sum(int* b, int* e, int acc){
+    cout << "int* b, int* e, int acc" << endl;
+    while (b != e)
+    {
+        acc += *b++; // add cur b then increase 
+    }
+    return acc;
+}
+
 
 
 int main(){
@@ -44,11 +53,24 @@ int main(){
     foo(1); // int still works fine, due to convertion 
 
     vector<int> a {1,2,3};
+    vector<double> b {1,2,3};
     
     auto res_it = sum(begin(a), end(a), 0); // normal call using iter 
     assert(res_it==6);
 
     auto res_ptr = sum(a.data(), a.data()+3, 0); // dose not have  Iter::value_type due to being a ptr 
-     assert(res_ptr==6);
+    assert(res_ptr==6);
+
+    auto res_dou = sum(b.data(), b.data()+3, 0.0);
+    assert(res_ptr==6);
+
     return 0;
 }
+
+
+/*
+Used to ensure that a special overload is not used when we do not want that type to be used. 
+
+replaced by concepts in C++ 20
+
+*/
