@@ -27,7 +27,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <algorithm>
 
 // This struct represents an element in the HTML hierarchy. Each
 // element in the document hierarchy has a type, a tag and an
@@ -76,101 +75,6 @@ struct Element
     std::string content{};
     std::vector<Element*> children{};
 };
-
-enum Type {
-    Content,
-    Container,
-    Standalone
-};
-
-
-class Element {
-    protected: 
-        std::string tag;
-        std::string id{};
-    public: 
-        virtual ~Element() = default;
-        virtual void print(unsigned indent = 0)  = 0;
-
-        void print_indent(unsigned indent) // could be done with for each but not rellt needed 
-        {
-            for (unsigned i{0}; i < indent; ++i)
-            {
-                std::cout << ' ';
-            }
-        }
-
-        void print_tag()
-        {
-            std::cout << "<" << this->tag;
-            if (this->id != "")
-            {
-                std::cout << " id='" << this->id << "'";
-            }
-            std::cout << ">";
-        }
-        
-};
-
-class Content : public Element 
-{
-    private: 
-        std::string content{};
-
-    public: 
-
-        Content(std::string content)
-            :content{content}
-            { }
-
-        void print(unsigned indent = 0) override {
-            std::cout << this->content << "</" << this->tag << ">";   
-        }
-
-};
-
-class Container : public Element 
-{
-    private: 
-        std::vector<Element*> children{};
-    
-    public: 
-        void add_child(Element& child){
-            this->children.push_back(&child);
-        }
-
-        void print(unsigned indent = 0) override {
-            this->print_indent(indent);
-            this->print_tag();
-            std::for_each(std::begin(this->children), 
-                std::end(this->children), 
-                [indent](Element* e){
-                    e->print(indent); 
-                });
-        }
-};
-
-class Standalone : public Element 
-{
-
-};
-
-
-
-class Hierarchy {
-    private:
-        std::vector<Element*> elements {};  
-
-    public: 
-        void insert(Element& element){
-            
-        }
-};
-
-
-
-
-
 
 // Helper function that prints 'indent' number of spaces.
 void print_indent(unsigned indent)
