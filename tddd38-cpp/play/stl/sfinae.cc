@@ -74,3 +74,22 @@ Used to ensure that a special overload is not used when we do not want that type
 replaced by concepts in C++ 20
 
 */
+
+// SFINEA using ensure func and priority 
+template<typename T>
+auto get_helper(T&& t, int i, int) -> decltype(( t.at(i) ))
+{
+    return t.at(i);
+}
+
+template<typename T>
+auto get_helper(T&& t, int i, long) -> decltype(( *std::next(std::begin(t), i) )) 
+{
+    return *std::next(std::begin(t), i);
+}
+
+template<typename T>
+auto&& get(T&& t, int i)
+{
+    return get_helper(std::forward<T>(t), i, 0);
+}
