@@ -28,6 +28,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <map>
 
 // This struct represents an element in the HTML hierarchy. Each
 // element in the document hierarchy has a type, a tag and an
@@ -68,27 +69,21 @@
 // - Maybe type == 0 (Content) should be able to store arbitrary data
 //   and not just strings?
 
-struct Element
-{
-    int type{};
-    std::string tag{};
-    std::string id{};
-    std::string content{};
-    std::vector<Element*> children{};
-};
-
-enum Type {
-    Content,
-    Container,
-    Standalone
-};
-
-
 class Element {
     protected: 
-        std::string tag;
-        std::string id{};
+        std::string tag{};
+        
     public: 
+        std::string id{};
+
+        Element(std::string tag){
+            this->tag = tag;
+        }
+
+        Element() {
+            this->tag = "None";
+        }
+    
         virtual ~Element() = default;
         virtual void print(unsigned indent = 0)  = 0;
 
@@ -109,19 +104,39 @@ class Element {
             }
             std::cout << ">";
         }
+
+        virtual std::vector<Element*> query_if(bool(*predicate)(Element& e)){
+            std::vector<Element*> result {};
+            if (predicate(*this))
+            {
+                result.push_back(this);
+            }
+            return result;
+        }
+
+        virtual std::vector<Element*> query_tag(std::string const& tag){
+            std::vector<Element*> result {};
+            if (this->tag == tag)
+            {
+                result.push_back(this);
+            }
+            return result;
+        }
         
 };
 
 class Content : public Element 
 {
-    private: 
+    private:
         std::string content{};
 
     public: 
 
-        Content(std::string content)
-            :content{content}
-            { }
+        Content(std::string tag, std::string id, std::string content){
+            this->tag = tag;
+            this->id = id;
+            this->content = content;
+        }
 
         void print(unsigned indent = 0) override {
             std::cout << this->content << "</" << this->tag << ">";   
@@ -134,9 +149,19 @@ class Container : public Element
     private: 
         std::vector<Element*> children{};
     
-    public: 
+    public:
+
+        Container(std::string tag, std::string id = ""){
+            this->tag = tag;
+            this->id = id;
+        }
+
         void add_child(Element& child){
             this->children.push_back(&child);
+        }
+
+        std::vector<Element*> get_children() const {
+            return  this->children;
         }
 
         void print(unsigned indent = 0) override {
@@ -148,239 +173,144 @@ class Container : public Element
                     e->print(indent); 
                 });
         }
+
+        std::vector<Element*> query_if(bool(*predicate)(Element& e)) override{
+            std::vector<Element*> result {};
+            if (predicate(*this))
+            {
+                result.push_back(this);
+                for( Element* elm : this->children) {
+                    std::vector<Element*> part{elm->query_if(predicate)};
+                    for(Element* chi_elm : part)
+                        result.push_back(chi_elm);
+                }
+            }
+            return result;
+        }
+
+        std::vector<Element*> query_tag(std::string const& tag) override {
+            std::vector<Element*> result {};
+            if (this->tag == tag)
+            {
+                result.push_back(this);
+                for( Element* elm : this->children) {
+                    std::vector<Element*> part{elm->query_tag(tag)};
+                    for(Element* chi_elm : part)
+                        result.push_back(chi_elm);
+                }
+            }
+            return result;
+        }
+
 };
 
 class Standalone : public Element 
 {
+    private: 
+        std::string content;
 
+    public: 
+        Standalone(std::string tag, std::string content = ""){
+            this->tag = tag;
+            this->content = content;
+        }
+
+        void print(unsigned indent = 0) override {
+            std::cout << this->content << "</" << this->tag << ">";   
+        }
 };
 
 
 
+class Hierarchy
+{
+public:
+
+    void insert(Element& element)
+    {
+        if (element.id != "")
+        {
+            lookup[element.id] = &element;
+        }
+        if (Container* container = dynamic_cast<Container*>(&element); container != nullptr)
+        {
+            for (Element* child : container->get_children())
+            {
+                insert(*child);
+            }
+        }
+    }
+
+    Element* query_id(std::string const& id) const
+    {
+        auto it {lookup.find(id)};
+        if (it == std::end(lookup))
+        {
+            return nullptr;
+        }
+        return it->second;
+    }
+    
+private:
+
+    std::map<std::string, Element*> lookup {};
+};
+
+/*
 class Hierarchy {
     private:
         std::vector<Element*> elements {};  
 
     public: 
+        
         void insert(Element& element){
-            
+            bool unique = (std::find(this->elements.begin(), 
+                                        this->elements.end(), element
+                                        ) != this->elements.end());
+            if(unique){
+                this->elements.push_back(&element); 
+                if (Container* container = dynamic_cast<Container*>(&element); container != nullptr){
+                    for (Element* child : container->get_children())
+                    {
+                        insert(*child);
+                    }
+                }
+            }
         }
+        
+        void insert(Container& element){
+            bool unique = (std::find(this->elements.begin(), 
+                                        this->elements.end(), element
+                                        ) != this->elements.end());
+            if(unique){
+                this->elements.push_back(&element);                 
+                for (Element* child : element.get_children())
+                {
+                    this->insert(*child);
+                }
+                
+            }
+        }
+        
+        Element* query_id(std::string const& id)
+        {
+            for (unsigned i{0}; i < this->elements.size(); ++i)
+            {
+                if (this->elements[i]->id == id)
+                    return this->elements[i];
+            }
+            return nullptr;
+        }
+
 };
+*/
 
-
-
-
-
-
-// Helper function that prints 'indent' number of spaces.
-void print_indent(unsigned indent)
-{
-    for (unsigned i{0}; i < indent; ++i)
-    {
-        std::cout << ' ';
-    }
-}
-
-// Helper function used to print the tag in the element 'e'.
-// If the element has an id it will be printed as well.
-void print_tag(Element const& e)
-{
-    std::cout << "<" << e.tag;
-    if (e.id != "")
-    {
-        std::cout << " id='" << e.id << "'";
-    }
-    std::cout << ">";
-}
-
-// Print the textual representation of element 'e'. The behaviour
-// varies depending on the type of element. The indent variable is
-// used to make sure that the element is indented correctly.
-
-// - Content   : prints the start tag followed by the content and then
-//               the end tag. Assumes that this is just one line when
-//               printed.
-
-// - Container : print the start tag on its own line followed by
-//               recursively printing each child with a deeper
-//               indentation. It ends with the end tag of 'e'.
-
-// - Standalone: print the start tag only. Assumes it is just one line
-//               when printed.
-
-// Wishlist:
-
-// - Would be nice to split this function in such a way that we don't
-//   need the enumeration of the type variable.
-
-void print(Element const& e, unsigned indent = 0)
-{
-    print_indent(indent);
-    print_tag(e);
-    if (e.type == 0)
-    {
-        std::cout << e.content << "</" << e.tag << ">";
-    }
-    else if (e.type == 1)
-    {
-        std::cout << std::endl;
-        for (unsigned i{0}; i < e.children.size(); ++i)
-        {
-            print(*e.children[i], indent + 4);
-        }
-        print_indent(indent);
-        std::cout << "</" << e.tag << ">";
-    }
-    std::cout << std::endl;
-}
-
-// This function only works with Container type elements. It adds a
-// new child to the container and returns a pointer to the newly added
-// child.
-Element* add_child(Element& e, Element& child)
-{
-    if (e.type == 1)
-    {
-        e.children.push_back(&child);
-        return e.children.back();
-    }
-    return nullptr;
-}
-
-// This function will go through 'e' and each of its children
-// recursively to find all elements which have the specified tag.
-
-// Wishlist:
-
-// - should use query_if instead.
-
-std::vector<Element*> query_tag(Element& e, std::string const& tag)
-{
-    std::vector<Element*> result {};
-    if (e.tag == tag)
-    {
-        result.push_back(&e);
-    }
-
-    // if the element is a Container, query their children as well
-    if (e.type == 1)
-    {
-        for (unsigned i{0}; i < e.children.size(); ++i)
-        {
-            std::vector<Element*> part { query_tag(*e.children[i], tag) };
-            for (unsigned j{0}; j < part.size(); ++j)
-            {
-                result.push_back(part[j]);
-            }
-        }
-    }
-    return result;
-}
-
-// This function will go through 'e' and each of its children
-// recursively to find all elements for which the predicate function
-// returns true.
-
-// Wishlist:
-
-// - it should be possible to pass in lambdas and function objets as well
-
-// - maybe there should be two versions, one if 'e' is a Container and
-//   one if its not.
-std::vector<Element*> query_if(Element& e, bool(*predicate)(Element& e))
-{
-    std::vector<Element*> result {};
-    if (predicate(e))
-    {
-        result.push_back(&e);
-    }
-
-    // if the element is a Container, query their children as well
-    if (e.type == 1)
-    {
-        for (unsigned i{0}; i < e.children.size(); ++i)
-        {
-            std::vector<Element*> part { query_if(*e.children[i], predicate) };
-            for (unsigned j{0}; j < part.size(); ++j)
-            {
-                result.push_back(part[j]);
-            }
-        }
-    }
-    return result;    
-}
-
-// This is a struct that keep track of every element in the document hierarchy.
-
-// Wishlist:
-
-// - the elements should only be possible to modify inside the
-//   'insert' function.
-
-struct Hierarchy
-{
-    std::vector<Element*> elements {};
-};
-
-// Insert an element into the document hierarchy. Each element is
-// unique inside the hierarchy, meaning if you add it again nothing
-// should happen.
-
-// Wishlist:
-
-// - It should be possible to reduce the number of times we visit each
-//   element in the hierarchy somehow.
-
-void insert(Hierarchy& hierarchy, Element& element)
-{
-    bool unique {true};
-    for (unsigned i{0}; i < hierarchy.elements.size(); ++i)
-    {
-        if (element.id == hierarchy.elements[i]->id)
-        {
-            unique = false;
-            break;
-        }
-    }
-
-    if (unique)
-    {
-        hierarchy.elements.push_back(&element);
-
-        // if this is a Container element, make sure that all of its
-        // children are in the hierarchy as well.
-        if (element.type == 1)
-        {
-            for (Element* child : element.children)
-            {
-                insert(hierarchy, *child);
-            }
-        }
-    }
-}
-
-// This function retrieves the element in the hierarchy with the specified id.
-// If no such element exists it will return nullptr.
-
-// Wishlist:
-
-// - would be nice if this didn't iterate through all elements (O(log n) should be possible)
-
-Element* query_id(Hierarchy const& hierarchy, std::string const& id)
-{
-    for (unsigned i{0}; i < hierarchy.elements.size(); ++i)
-    {
-        if (hierarchy.elements[i]->id == id)
-            return hierarchy.elements[i];
-    }
-    return nullptr;
-}
-
-// This is a helper function used for testing query_if
 bool only_content(Element& e)
 {
-    return e.type == 0;
+    return dynamic_cast<Content*>(&e) != nullptr;
 }
+
+
 
 /*
   Expected output:
@@ -433,57 +363,57 @@ int main()
 {
 
     // Create a HTML document
-    
-    Element body { 1, "body" };
-    Element header { 0, "h3", "", "Title" };
 
-    add_child(body, header);
-    
-    Element div1 { 1, "div", "div-1" };
+    Container body { "body" };
+    Content header { "h3", "", "Title" };
 
-    add_child(body, div1);
+    body.add_child(header);
     
-    Element ul { 1, "ul" };
-    Element li1 { 0, "li", "", "Element #1" };
-    Element li2 { 0, "li", "", "Element #2" };
+    Container div1 { "div", "div-1" };
 
-    add_child(ul, li1);
-    add_child(ul, li2);
+    body.add_child(div1);
     
-    add_child(div1, ul);
-    
-    Element div2 { 1, "div", "div-2" };
+    Container ul { "ul" };
+    Content li1 { "li", "", "Element #1" };
+    Content li2 { "li", "", "Element #2" };
 
-    add_child(body, div2);
+    ul.add_child(li1);
+    ul.add_child(li2);
     
-    Element p { 0, "p", "", "This is a paragraph" };
-
-    add_child(div2, p);
+    div1.add_child(ul);
     
-    Element submit { 2, "button", "submit-button" };
+    Container div2 {"div", "div-2" };
 
-    add_child(body, submit);
+    body.add_child(div2);
+    
+    Content p { "p", "", "This is a paragraph" };
+
+    div2.add_child(p);
+    
+    Standalone submit { "button", "submit-button" };
+
+    body.add_child(submit);
 
     Hierarchy hierarchy {};
-    insert(hierarchy, body);
+    hierarchy.insert(body);
 
     // adding it again should do nothing
-    insert(hierarchy, body);
+    hierarchy.insert(body);
 
     // Print the HTML document
     
     std::cout << "== body == \n" << std::endl;
     
-    print(body);
+    body.print();
 
     // Print all the divs 
     
     std::cout << "\n== divs == \n" << std::endl;
     
-    std::vector<Element*> divs { query_tag(body, "div") };
+    std::vector<Element*> divs { body.query_tag("div") };
     for (Element* div : divs)
     {
-        print(*div);
+        div->print();
         std::cout << std::endl;
     }
 
@@ -491,16 +421,19 @@ int main()
     
     std::cout << "== submit-button == \n" << std::endl;
     
-    print(*query_id(hierarchy, "submit-button"));
+    hierarchy.query_id("submit-button")->print();
 
     // Print all the elements that only contain content.
     
     std::cout << "\n== content == \n" << std::endl;
     
-    std::vector<Element*> contents { query_if(body, only_content) };
+    std::vector<Element*> contents { body.query_if(only_content) };
     for (Element* e : contents)
     {
-        print(*e);
+        e->print();
         std::cout << std::endl;
-    }    
+    } 
+    
+
+   return 0; 
 }
