@@ -139,7 +139,7 @@ class Content : public Element
         }
 
         void print(unsigned indent = 0) override {
-            std::cout << this->content << "</" << this->tag << ">";   
+            std::cout << this->content << "</" << this->tag << ">" << std::endl;   
         }
 
 };
