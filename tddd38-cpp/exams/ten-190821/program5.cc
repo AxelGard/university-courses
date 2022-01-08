@@ -1,39 +1,51 @@
+#include <iterator>
 #include <vector>
 #include <cassert>
 #include <forward_list>
 #include <list>
 
-// binary search
-int binary_search(int first, int last, T const& value)
-{
-  int error{last};
-  if (first != last)
+
+namespace details {
+  // binary search
+  template<typename It, typename T>
+  It search(It first, It last, T const& value, std::random_access_iterator_tag)
   {
-    while (first < last)
+    It error{last};
+    if (first != last)
     {
-      int pivot{first + (last - first) / 2};
-      if (/* container[pivot] < value */)
-        first = pivot+1;
-      else if (/* container[pivot] > value */)
-        last = pivot;
-      else
-        return pivot;
+      while (first < last)
+      {
+        It pivot{first + (last - first) / 2};
+        if (*pivot < value)
+          first = std::next(pivot);
+        else if (*pivot > value)
+          last = pivot;
+        else
+          return pivot;
+      }
     }
+    return error;
   }
-  return error;
+
+  // linear search
+  template<typename It, typename T>
+  It search(It first, It last, T const& value, std::forward_iterator_tag)
+  {
+    for (It pivot{first}; pivot != last; ++pivot)
+    {
+      if (*pivot == value )
+        return pivot;
+      else if (*pivot > value )
+        break;
+    }
+    return last;
+  }
+
 }
 
-// linear search
-int linear_search(int first, int last, T const& value)
-{
-  for (int pivot{first}; pivot != last; ++pivot)
-  {
-    if (/* container[pivot] == value */)
-      return pivot;
-    else if (/* container[pivot] > value */)
-      break;
-  }
-  return last;
+template<typename It>
+auto search(It first, It last, typename std::iterator_traits<It>::value_type const& value ){
+  return details::search(first, last, value, typename std::iterator_traits<It>::iterator_category{});
 }
 
 int main()

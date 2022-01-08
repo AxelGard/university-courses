@@ -159,9 +159,10 @@ int main()
     }
 
     for (auto book : books)
-    {
         delete book;
-    }
+
+    for (auto reader : readers)
+        delete reader;
 
 
   
