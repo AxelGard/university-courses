@@ -43,7 +43,7 @@ class filter_iterator{
         }
 
         filter_iterator& operator++(){
-            ++this->begin;
+            ++(this->begin);
             this->begin = find_if(this->begin, this->end, this->pred);
             return *this;
         }
