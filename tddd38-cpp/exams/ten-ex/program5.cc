@@ -37,21 +37,29 @@ using namespace std;
   10 8    | 45
   10 9    | 10
   10 10   | 1
-  
+
  */
 
-int rotate(vector<int> & denominators, int k)
+int rotate(vector<int> &denominators, int k)
 {
-  rotate(begin(denominators), next(begin(denominators),k), end(denominators));
+  // move all elements in the range [0, k] to the end of the vector
+  for (int i{0}; i < k; ++i)
+  {
+    // move each element into position by swapping them to the end
+    for (int j{0}; j + 1 < denominators.size() - i; ++j)
+    {
+      swap(denominators[j], denominators[j + 1]);
+    }
+  }
+
   // return how far in the overlap ends
   return denominators.size() - k;
 }
 
 int main()
 {
-  int n = 10;
-  int k = 4;
-  //std::cin >> n >> k;
+  int n, k;
+  std::cin >> n >> k;
 
   // store a vector of all factors in the numerator
   vector<int> factors(n - k, 0);
@@ -62,6 +70,7 @@ int main()
   // fill factors with k+1, k+2, ..., n-1, n
   iota(factors.begin(), factors.end(), k+1);
 
+  // fill denominators with 1, 2, ..., n-k-1, n-k
   iota(denominators.begin(), denominators.end(), 1);
 
   // if there is overlap between factors and denominators we remove it
@@ -73,12 +82,23 @@ int main()
     auto dist{rotate(denominators, k)};
 
     // remove the overlap
-    factors.erase(factors.begin(), next(begin(factors), dist));
-    denominators.erase(begin(denominators), next(begin(denominators), dist));
-
+    vector<int> intersect;
+    set_intersection(factors.begin(), factors.end(), denominators.begin(), denominators.end(), back_inserter(intersect));
+    remove(factors.begin(), factors.end(), intersect);
+    factors.erase(factors.begin());
+    denominators.erase(denominators.begin());
   }
 
   // for each denominator we want to divided it with a factor in factors
+  transform(denominators.begin(), denominators.end(), denominators.begin(), [factors](int den)
+            { 
+              auto it = find_if(factors.begin(), factors.end(), [den](int fa) { return fa % den == 0; });
+              if (!(*it)){
+                  fa /= den;
+              }
+              
+            });
+
   for (int i{0}; i < denominators.size(); ++i)
   {
 
@@ -91,27 +111,22 @@ int main()
         break;
       }
     }
-    
+
     // divide the found factor
     factors[j] /= denominators[i];
     denominators[i] = 1;
   }
 
-
-  transform(begin(denominators), end(denominators), begin(denominators), 
-    [&factors](int denom){
-      auto it {find_if(begin(factors), end(factors), 
-        [denom](int fact){ return fact % denom == 0; 
-      })};
-
-    *it /= denom;
-    return 1;  
-  });
-
-
   // multiply all factors together
-  int result{accumulate(begin(factors), end(factors), 1, multiplies<int>{})};
-  
+  int result{1};
+  for (int i{0}; i < factors.size(); ++i)
+  {
+    result *= factors[i];
+  }
+
+  int result = accumulate(factors.begin(), factors.end(), 1, multiplies<int>());
+
   // print the result
   cout << result << endl;
+  copy(result, )
 }
