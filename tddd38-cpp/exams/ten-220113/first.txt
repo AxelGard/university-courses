@@ -1,0 +1,6 @@
+17 18 Go Home
+08 10 Go to morning lecture
+15 17 Lab work
+10 12 Study
+13 15 Afternoon lecture
+18 22 Relax
