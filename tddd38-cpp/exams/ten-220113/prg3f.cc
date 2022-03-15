@@ -1,52 +1,57 @@
 #include <tuple>
-#include <vector>
-#include <string>
-#include <cassert>
 #include <map>
 #include <stdexcept>
+#include <vector>
+#include <utility>
+#include <string>
+#include <cassert>
 
-using namespace std;
+template <typename... Ts>
+class database
+{
+public:
+    using row_type = std::tuple<Ts...>;
 
-template<typename T, typename Y, typename U>
-class database {
-    int last_id{};
-    using row_type = tuple<T, Y, U>;
-    map<int, row_type> rows{};
+    int insert(Ts... ts)
+    {
+        int id{current++};
+        rows[id] = row_type{ts...};
+        return id;
+    }
 
-    public:
-        int insert(T t, Y y, U u)
+    row_type &get(int id)
+    {
+        auto it{rows.find(id)};
+        if (it == rows.end())
         {
-            int id = last_id;
-            rows[id] = {t,y,u};
-            last_id++;
-            return id;
+            throw std::out_of_range{"This ID does not exist"};
         }
+        return it->second;
+    }
 
-        row_type& get(int idx) {
-            auto it = rows.find(idx);
-            if (it == rows.end()){
-                throw out_of_range("index: " + to_string(idx) + "  is out side of database range");
-            }
-            return rows[idx];
-        }
+    void remove(int id)
+    {
+        auto it{rows.find(id)};
+        rows.erase(it);
+    }
 
-        void remove(int idx){
-            if (idx < 0 || idx > rows.size()) return;
-            rows.erase(idx);
-        }
-
-        template<typename F> 
-        vector<int> filter(F &&f)
+    template <typename F>
+    std::vector<int> filter(F &&f)
+    {
+        std::vector<int> result{};
+        for (auto &&[id, row] : rows)
         {
-            vector<int> result{};
-            for (auto &&[id, row] : rows)
+            if (f(id, std::forward<row_type>(row)))
             {
-                if (f(id, std::forward<row_type>(row))){
-                    result.push_back(id);
-                }
+                result.push_back(id);
             }
-            return result;
         }
+        return result;
+    }
+
+private:
+    int current{0};
+    std::map<int, row_type> rows{};
 };
 
 int main()
@@ -142,7 +147,7 @@ int main()
         assert(std::get<1>(row) == "e");
         assert(std::get<2>(row) == 9);
     }
-    
+
     // Test the filter function
     {
         std::vector<int> result{
