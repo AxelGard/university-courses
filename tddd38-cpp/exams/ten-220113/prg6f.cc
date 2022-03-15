@@ -1,9 +1,58 @@
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace std;
+// TODO: Write description
+namespace details
+{
+
+    template <typename Container, typename Callable>
+    auto enumerate(Container const &container, Callable &&callable, int, int)
+        -> decltype(callable(*std::begin(container), 0, container.size()), std::declval<void>())
+    {
+        cout << "container.size()" << endl;
+        unsigned index{0};
+        for (auto &&element : container)
+        {
+            callable(element, index, container.size());
+            ++index;
+        }
+    }
+
+    template <typename Container, typename Callable>
+    auto enumerate(Container const &container, Callable &&callable, int, float)
+        -> decltype(callable(*std::begin(container), 0), std::declval<void>())
+    {
+        cout << "*std::begin(container), 0)" << endl;
+        unsigned index{0};
+        for (auto &&element : container)
+        {
+            callable(element, index);
+            ++index;
+        }
+    }
+
+    template <typename Container, typename Callable>
+    auto enumerate(Container const &container, Callable &&callable, float, float)
+        -> decltype(callable(*std::begin(container)), std::declval<void>())
+    {
+        cout << "*std::begin(container)" << endl;
+        for (auto &&element : container)
+        {
+            callable(element);
+        }
+    }
+}
+
+template <typename Container, typename Callable>
+void enumerate(Container const &container, Callable &&callable)
+{
+    details::enumerate(container, std::forward<Callable>(callable), 0, 0);
+}
 
 /* Expected output:
 
@@ -28,47 +77,6 @@ using namespace std;
 
 
 */
-namespace details {
-    template <typename C, typename F>
-    auto enumerate(C c, F &&f, int, int) // used by C-arr and map<>
-        -> decltype(f(*begin(c), 0, c.size()), declval<void>())
-    {
-        unsigned index{0};
-        for (auto &&e : c){
-            f(e, index, c.size());
-            ++index;
-        }
-    }
-
-    template <typename C, typename F>
-    auto enumerate(C c, F &&f, int, float) 
-        -> decltype(f(*begin(c), 0), declval<void>())
-    {
-        unsigned index{0};
-        for (auto &&e : c)
-        {
-            f(e, index);
-            ++index;
-        }
-    }
-
-    template <typename C, typename F>
-    auto enumerate(C c, F &&f, float, float)  // used by Vec  
-        -> decltype(f(*begin(c)), declval<void>())
-    {
-        unsigned index{0};
-        for (auto &&e : c)
-        {
-            f(e, index);
-        }
-    }
-}
-
-template <typename C, typename F>
-void enumerate(C c, F &&f)
-{
-    details::enumerate(c, forward<C>(c), 0,0)
-}
 
 int function(int n)
 {
@@ -82,8 +90,6 @@ struct Functor
         std::cout << index << ": " << n << std::endl;
     }
 };
-
- 
 
 int main()
 {

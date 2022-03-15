@@ -8,19 +8,23 @@ using namespace std;
 
 
 class Element {
-    public: 
 
+    protected:
+        string const name;
+
+    public:
         Element(string name)
             : name{name}
-            { }
+        { }
 
         virtual ~Element() = default;
 
         virtual void print(ostream& os) const = 0;
 
-    protected: 
-        string const name; 
+    
 };
+
+
 
 class Label : public Element {
     private: 
