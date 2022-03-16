@@ -1,6 +1,6 @@
 # Repeated mistakes
 
-*from 2022-01-13*
+*from exam 2022-01-13*
 
 ## From Asg 1 
 
